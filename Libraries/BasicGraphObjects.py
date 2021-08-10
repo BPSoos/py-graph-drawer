@@ -1,5 +1,8 @@
 import pygame
+import math
 
+from DrawHelper import *
+PI = math.pi
 class AbstractGraphObject(object):
 
     def __init__(self):
@@ -59,9 +62,24 @@ class Edge(AbstractGraphObject):
     def end(self, value):
         self._end = value
 
-    def draw(self, screen, graph):
-           pygame.draw.line(screen, self.color, (graph.vertices[self.start-1].x, graph.vertices[self.start-1].y),
-                            (graph.vertices[self.end-1].x, graph.vertices[self.end-1].y), self.width)
+    def draw(self, screen, graph, current_edges=0):
+        start_location  = PygamePoint(graph.vertices[self.start-1].x, graph.vertices[self.start-1].y)
+        end_location = PygamePoint(graph.vertices[self.end-1].x, graph.vertices[self.end-1].y)
+        if start_location.x == end_location.x:
+            height = graph.vertices[0].radius * current_edges + 1
+            width = (end_location.y - start_location.y)
+        elif start_location.y == end_location.y:
+            height = (end_location.x - start_location.x)
+            width = graph.vertices[0].radius * current_edges + 1
+        else:
+            height = (end_location.x - start_location.x)
+            width = (end_location.y - start_location.y)
+        #curve_rect = pygame.Rect(start_location.x, start_location.y, height, width)
+        curve_rect = pygame.Rect(start_location.x, start_location.y, 2*(end_location.x-start_location.x),
+                                 2*(end_location.y-start_location.y))
+
+        #pygame.draw.rect(screen, self.color, curve_rect, 1)
+        pygame.draw.arc(screen, self.color, curve_rect, PI/2, PI, 1)
 
 
 

@@ -1,0 +1,1 @@
+docker build . -t grapher:basic_v2.4
