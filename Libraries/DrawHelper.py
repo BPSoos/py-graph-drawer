@@ -122,16 +122,11 @@ class DrawHelper(object):
         angle_1 = DrawHelper.get_start_angle_for_point(start_point, center)
         angle_2 = DrawHelper.get_start_angle_for_point(end_point, center)
         if start_point[1] < center[1] < end_point[1] and angle_2 > pi + angle_1:
-            first_point = end_point
             angle = (angle_2, angle_1)
         elif start_point[1] > center[1] > end_point[1] and angle_1 > pi + angle_2:
-            first_point = start_point
             angle = (angle_1, angle_2)
         else:
-            first_point = start_point if angle_1 < angle_2 else end_point
-            print('c')
             angle = (angle_1, angle_2) if angle_1 < angle_2 else (angle_2, angle_1)
-        print(' '.join(str(int(deg(degr))) for degr in angle))
         return angle
 
     @staticmethod
@@ -147,8 +142,6 @@ class DrawHelper(object):
         Ya = start_point[1]
         Yb = end_point[1]
         radius = sqrt((end_point[0] - start_point[0]) ** 2 + (end_point[1] - start_point[1]) ** 2)
-        # half_point = (int((start_point[0] + end_point[0]) / 2),
-        #               int((start_point[1] + end_point[1]) / 2))
         center_x, center_y = symbols(' center_x center_y ')
         if Ya != Yb:
             halving_line_eq = Eq(center_y, (-(Xa - Xb) /
@@ -175,7 +168,6 @@ class DrawHelper(object):
         a = vector[1][0]
         b = DrawHelper.get_lenght_of_segment(vector[0], vector[1])
         c = DrawHelper.get_lenght_of_segment(vector[1], (a, 0))
-        # print(f'rad {(a ** 2 + b ** 2 - c ** 2) / (2 * a * b)}')
         return acos((a ** 2 + b ** 2 - c ** 2) / (2 * a * b))
 
     @staticmethod
