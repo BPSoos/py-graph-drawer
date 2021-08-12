@@ -1,17 +1,87 @@
+import sys
 from sympy import *
 
-class PygamePoint(object):
 
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+class CustomIterable(object):
+
+    def __init__(self, to_iter=None):
+        if isinstance(to_iter, (tuple, list, dict)):
+            self._to_iter = to_iter
+        else:
+            raise TypeError(f'Input type of {type(to_iter)} is invalid for '
+                            f"<property '{sys._getframe().f_code.co_name}'> of <class '{self.__class__.__name__}'>")
 
     def __str__(self):
-        return str((self.x, self.y))
+        return str(self._to_iter)
+
+    def __len__(self):
+        return len(self._to_iter)
+
+    def __iter__(self):
+        self.n = 0
+        return iter(self._to_iter)
+
+    def __next__(self):
+        if self.n < len(self):
+            result = self._to_iter[self.n]
+            self.n += 1
+            return result
+
+
+class Point(CustomIterable):
+
+    def __init__(self, x, y):
+        super(Point, self).__init__([x, y])
 
     @property
-    def coordinates(self):
-        return self.x, self.y
+    def x(self):
+        return self._to_iter[0]
+
+    @x.setter
+    def x(self, value):
+        self._to_iter[0] = value
+
+    @property
+    def y(self):
+        return self._to_iter[1]
+
+    @y.setter
+    def y(self, value):
+        self._to_iter[1] = value
+
+
+class Segment(CustomIterable):
+
+    def __init__(self, start_point, end_point):
+        super(Segment, self).__init__([start_point, end_point])
+
+    @property
+    def start(self):
+        return self._to_iter[0]
+
+    @start.setter
+    def start(self, value):
+        if isinstance(value, Point):
+            self._to_iter[0] = value
+        elif isinstance(value, (tuple, list)):
+            self._to_iter[0] = [*value]
+        else:
+            raise TypeError(f'Input type of {type(value)} is invalid for '
+                            f"<property '{sys._getframe(  ).f_code.co_name}'> of <class '{self.__class__.__name__}'>")
+
+    @property
+    def end(self):
+        return self._to_iter[1]
+
+    @end.setter
+    def end(self, value):
+        if isinstance(value, Point):
+            self._to_iter[1] = value
+        elif isinstance(value, (tuple, list)):
+            self._to_iter[1] = [*value]
+        else:
+            raise TypeError(f'Input type of {type(value)} is invalid for '
+                            f"<property '{sys._getframe(  ).f_code.co_name}'> of <class '{self.__class__.__name__}'>")
 
 
 class DrawHelper(object):
@@ -27,21 +97,23 @@ class DrawHelper(object):
 
     @staticmethod
     def get_start_angle_for_point(point, center):
-        print(f'coordinates: {point[0]}, {point[1]}')
-        print(center)
         point = DrawHelper.get_vector_of_segment(center, point)[1]
         x = point[0]
         y = point[1]
-        print(f'x: {x} y: {y}')
         if x > 0 and y <= 0:
-            return atan(abs(y/x))
+            return atan(abs(y / x))
         if x <= 0 and y <= 0:
-            return pi - atan(abs(y/x))
+            return pi - atan(abs(y / x))
         if x <= 0 and y > 0:
-            return pi + atan(abs(y/x))
+            return pi + atan(abs(y / x))
         if x > 0 and y > 0:
-            return 2*pi - atan(abs(y/x))
+            return 2 * pi - atan(abs(y / x))
 
+    @staticmethod
+    def get_arc_data_of_segment(start_point, end_point, get_top=False):
+        angles = DrawHelper.get_start_angle_segment_of_rected_segment(start_point, end_point, get_top_rect=get_top)
+        arc_rect = DrawHelper.get_rect_around_segment(start_point, end_point, get_top_rect=get_top)
+        return (*angles, arc_rect)
 
     @staticmethod
     def get_start_angle_segment_of_rected_segment(start_point, end_point, get_top_rect=True):
@@ -49,18 +121,17 @@ class DrawHelper(object):
         center = centers[1] if get_top_rect else centers[0]
         angle_1 = DrawHelper.get_start_angle_for_point(start_point, center)
         angle_2 = DrawHelper.get_start_angle_for_point(end_point, center)
-        print(f'angle1: {angle_1}, angle2: {angle_2}')
-        if start_point[1] < center[1] < end_point[1] and angle_2 > angle_1:
+        if start_point[1] < center[1] < end_point[1] and angle_2 > pi + angle_1:
             first_point = end_point
             angle = (angle_2, angle_1)
-        elif start_point[1] > center[1] > end_point[1] and angle_1 > angle_2:
+        elif start_point[1] > center[1] > end_point[1] and angle_1 > pi + angle_2:
             first_point = start_point
             angle = (angle_1, angle_2)
         else:
             first_point = start_point if angle_1 < angle_2 else end_point
+            print('c')
             angle = (angle_1, angle_2) if angle_1 < angle_2 else (angle_2, angle_1)
-        print(f'{first_point}, {end_point}, {start_point}')
-        print(f'center[0]:{center[0]}, center[1]: {center[1]} sin(angle):{int(deg(angle[0])),int(deg(angle[1]))}, radius:{radius}')
+        print(' '.join(str(int(deg(degr))) for degr in angle))
         return angle
 
     @staticmethod
@@ -104,7 +175,7 @@ class DrawHelper(object):
         a = vector[1][0]
         b = DrawHelper.get_lenght_of_segment(vector[0], vector[1])
         c = DrawHelper.get_lenght_of_segment(vector[1], (a, 0))
-        #print(f'rad {(a ** 2 + b ** 2 - c ** 2) / (2 * a * b)}')
+        # print(f'rad {(a ** 2 + b ** 2 - c ** 2) / (2 * a * b)}')
         return acos((a ** 2 + b ** 2 - c ** 2) / (2 * a * b))
 
     @staticmethod
@@ -117,4 +188,3 @@ class DrawHelper(object):
     @staticmethod
     def get_arc_circle_rect(center, radius):
         return center[0] - radius, center[1] - radius, 2 * radius, 2 * radius
-

@@ -10,61 +10,27 @@ class AbstractGraphObject(object):
         self.color = pygame.Color('black')
         self.width = 1
 
-class Vertice(AbstractGraphObject):
+class Vertice(Point, AbstractGraphObject):
 
     def __init__(self, x, y):
-        super(Vertice, self).__init__()
-        self._x = x
-        self._y = y
+        super(Vertice, self).__init__(x, y)
+        AbstractGraphObject.__init__(self)
         self.radius = 15
-
-    @property
-    def x(self):
-        return self._x
-
-    @x.setter
-    def x(self, value):
-        self._x = value
-
-    @property
-    def y(self):
-        return self._y
-
-    @y.setter
-    def y(self, value):
-        self._y = value
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.background_color, (self.x, self.y), self.radius)
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius, self.width)
 
 
-class Edge(AbstractGraphObject):
+class Edge(Segment, AbstractGraphObject):
 
     def __init__(self, start_vertice, end_vertice):
-        super(Edge, self).__init__()
-        self._start = start_vertice
-        self._end = end_vertice
-
-    @property
-    def start(self):
-        return self._start
-
-    @start.setter
-    def start(self, value):
-        self._start = value
-
-    @property
-    def end(self):
-        return self._end
-
-    @end.setter
-    def end(self, value):
-        self._end = value
+        super(Edge, self).__init__(start_vertice, end_vertice)
+        AbstractGraphObject.__init__(self)
 
     def draw(self, screen, graph, current_edges=0):
-        start_location  = PygamePoint(graph.vertices[self.start-1].x, graph.vertices[self.start-1].y)
-        end_location = PygamePoint(graph.vertices[self.end-1].x, graph.vertices[self.end-1].y)
+        start_location = Point(graph.vertices[self.start-1].x, graph.vertices[self.start-1].y)
+        end_location = Point(graph.vertices[self.end-1].x, graph.vertices[self.end-1].y)
         if start_location.x == end_location.x:
             height = graph.vertices[0].radius * current_edges + 1
             width = (end_location.y - start_location.y)

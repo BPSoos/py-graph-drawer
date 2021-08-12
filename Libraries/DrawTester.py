@@ -16,6 +16,9 @@ background = (255, 255, 204)
 bg = BasicGraph(edges=[Edge(4, 2)])
 screen = pygame.display.set_mode(size)
 
+testing_points = {'start': [(200, 100), (100, 100), (100, 200), (100, 300), (200, 300), (300, 300), (300, 200), (300, 100)],
+                        'end': [(200, 200),(200, 200), (200, 200), (200, 200), (200, 200), (200, 200), (200, 200), (200, 200)]}
+
 
 def draw_line_with_bounding_rect(start_point, end_point):
     pygame.draw.line(screen, pygame.Color('black'), start_point, end_point, 2)
@@ -23,19 +26,25 @@ def draw_line_with_bounding_rect(start_point, end_point):
     #centers, radius = DrawHelper.get_arc_circle_data(start_point, end_point)
     #pygame.draw.circle(screen,pygame.Color('black'), centers[0], radius, 1)
 
+
+def draw_test_flower(screen):
+    multiplier = 2
+    for i in range(0, len(testing_points['start'])):
+        S = tuple(cord * multiplier for cord in testing_points['start'][i])
+        E = tuple(cord * multiplier for cord in testing_points['end'][i])
+        draw_line_with_bounding_rect(S, E)
+        angle_1, angle_2, arc_rect = DrawHelper.get_arc_data_of_segment(S, E, False)
+        pygame.draw.arc(screen, pygame.Color('black'), arc_rect, angle_1, angle_2, 1)
+        angle_1, angle_2, arc_rect = DrawHelper.get_arc_data_of_segment(S, E, True)
+        pygame.draw.arc(screen, pygame.Color('black'), arc_rect, angle_1, angle_2, 1)
+        # pygame.draw.line(screen, pygame.Color('black'), end_line[0], end_line[1])
+        Vertice(*S).draw(screen)
+        Vertice(*E).draw(screen)
+
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
-        S = (100, 200)
-        E = (100, 400)
         screen.fill(background)
-        draw_line_with_bounding_rect(S, E)
-        angle = DrawHelper.get_start_angle_segment_of_rected_segment(S, E, get_top_rect=False)
-        arc_rect = DrawHelper.get_rect_around_segment(S, E, get_top_rect=False)
-        pygame.draw.arc(screen, pygame.Color('black'), arc_rect, angle[0], angle[1], 1)
-        angle = DrawHelper.get_start_angle_segment_of_rected_segment(S, E, get_top_rect=True)
-        arc_rect = DrawHelper.get_rect_around_segment(S, E, get_top_rect=True)
-        pygame.draw.arc(screen, pygame.Color('black'), arc_rect, angle[0], angle[1], 1)
-        #pygame.draw.line(screen, pygame.Color('black'), end_line[0], end_line[1])
+        draw_test_flower(screen)
         pygame.display.flip()
