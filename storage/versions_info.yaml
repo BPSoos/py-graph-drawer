@@ -1,3 +1,3 @@
 ---
 graph-drawer:
-  image: testimage:0.0
+  image: docker.io/pbaalt/testimage:0.0
