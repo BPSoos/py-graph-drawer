@@ -3,7 +3,7 @@ SET temp_dir=%~dp0../runtemp/
 if [%1] NEQ [] (
     SET image=%1
 ) else (
-    python %temp_dir%../libraries/yaml_parser.py "get_graph_drawer_data('%temp_dir%../storage/versions_info.yaml','image')" > Output
+    python %temp_dir%../libraries/yaml_parser.py "get_graph_drawer_data(r'%temp_dir%../storage/versions_info.txt','image')" > Output
     SET /p image=<Output
     DEL Output
 )
