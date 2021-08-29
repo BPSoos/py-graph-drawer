@@ -72,5 +72,21 @@ class BasicGraph(object):
             edge.context = context
         for vertice in self.vertices:
             vertice.context = context
+
+    def init_adjacency(self, adj):
+        self.vertices = []
+        self.edges = []
+        for i in range(0, len(adj)):
+            self.vertices.append(Vetice(0,0))
+        for i, vertice_edges in enumerate(adj):
+            for edge in vertice_edges:
+                self.edges.append(Edge((self.vertices[i],self.vertices[edge[0]])))    
+
+    def create_layout_circle(self):
+        angle_interval = math.pi * 2 / len(self.vertices)
+        radius = 4
+        center = (5, 5)
+        
+        
     
 

@@ -11,4 +11,4 @@ if [%1] NEQ [] (
 docker run -td --name graph-drawer -v %temp_dir%:/root/py-graph-drawer/runtemp^
                                    -v %temp_dir%../libraries/:/root/py-graph-drawer/libraries^
 								   -w /root/py-graph-drawer/runtemp^
-								    %image% bash
+								    docker.io/pbaalt/testimage:0.0 bash
