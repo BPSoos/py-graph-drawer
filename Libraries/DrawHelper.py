@@ -1,5 +1,4 @@
 import sys
-from sympy import *
 
 
 class CustomIterable(object):
